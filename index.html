@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html>
+
+	<head>
+		<meta charset="UTF-8">
+		<link rel="stylesheet" href="css/bootstrap.min.css" />
+		<script src="js/jquery-2.1.0.js"></script>
+		<script src="js/bootstrap.min.js"></script>
+		<!--
+        	<script src="js/vue.js"></script>
+        -->
+		<script src="https://cdn.jsdelivr.net/npm/vue"></script>
+		<title>音乐</title>
+	</head>
+
+	<body>
+		<div class="main_music">
+			<!--
+            	title
+            -->
+			<div class="index__hd">
+				<h2 class="index__tit"><i class="icon_txt">歌单推荐</i></h2>
+			</div>
+			<!--
+            	歌单切换
+            -->
+			<div class="mod_index_tab">
+				<ul class="nav nav-tabs">
+					<li>
+						<a href="#m_new" data-toggle="tab">新歌榜</a>
+					</li>
+					<li>
+						<a href="#m_hot" data-toggle="tab">热歌榜</a>
+					</li>
+					<li>
+						<a href="#m_board" data-toggle="tab">Billboard</a>
+					</li>
+					<li>
+						<a href="#m_china" data-toggle="tab">Hito中文榜</a>
+					</li>
+					<li>
+						<a href="#m_ktv" data-toggle="tab">KTV热歌榜</a>
+					</li>
+					<li>
+						<a href="#m_tai" data-toggle="tab">电台列表</a>
+					</li>
+				</ul>
+			</div>
+			<div id="show_music">
+				<div style="width: 750x;">
+				<ul v-for="(item, index) in in datas">
+					<li style="width: 145px;margin: 5px;float: left;">
+						<a href="" target="_blank">
+							<img style="width: 145px;height: 145px;" v-bind:src="item.music_pic">
+							<div class="overlay">
+								<p>{{item.music_name}}</p>
+							</div>
+						</a>
+						
+					</li>
+				</ul>	
+				</div>
+				
+			</div>
+		</div>
+	</body>
+	<script type="text/javascript">
+		//新歌榜
+		var new_url = "http://tingapi.ting.baidu.com/v1/restserver/ting?from=qianqian&version=2.1.0&method=baidu.ting.billboard.billList&format=json&type=1&offset=0&size=50";
+		//热歌榜
+		var hot_url = "http://tingapi.ting.baidu.com/v1/restserver/ting?from=qianqian&version=2.1.0&method=baidu.ting.billboard.billList&format=json&type=2&offset=0&size=50";
+		//Billboard
+		var board_url = "http://tingapi.ting.baidu.com/v1/restserver/ting?from=qianqian&version=2.1.0&method=baidu.ting.billboard.billList&format=json&type=8&offset=0&size=50";
+		//Hito中文榜
+		var china_url = "http://tingapi.ting.baidu.com/v1/restserver/ting?from=qianqian&version=2.1.0&method=baidu.ting.billboard.billList&format=json&type=18&offset=0&size=50";
+		//ktv
+		var ktv_url = "http://tingapi.ting.baidu.com/v1/restserver/ting?from=qianqian&version=2.1.0&method=baidu.ting.billboard.billList&format=json&type=6&offset=0&size=50";
+		//电台
+		var dian_url = "http://tingapi.ting.baidu.com/v1/restserver/ting?from=qianqian&version=2.1.0&method=baidu.ting.radio.getCategoryList&format=json";
+
+		var vmm = new Vue({
+			el: "#show_music",
+			data: {
+				datas: []
+
+			},
+			mounted: function() {
+				this.showData();
+				//需要执行的方法可以在mounted中进行触发，其获取的数据可以赋到data中后，可以放在前面进行渲染
+			},
+			methods: {
+				showData: function() {
+					jQuery.ajax({
+						type: 'Get',
+						url: board_url,
+						cache: false,
+						dataType: "jsonp",
+						success: function(data) {
+							for(var i = 0; i < data.song_list.length; i++) {
+								var pic_str =data.song_list[i]['pic_big']; 
+								var tmp = {'music_id':data.song_list[i]['album_id'],'music_name':data.song_list[i]['title'],'music_pic':pic_str.split("@")[0]};
+								vmm.datas.push(tmp);
+							}
+							console.log(vmm.datas);
+						},  
+						error: function() {
+							alert("发生异常");
+						}
+					});
+				}
+			}
+		})
+	</script>
+
+</html>
